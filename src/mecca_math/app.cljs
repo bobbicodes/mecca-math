@@ -34,8 +34,8 @@
         (for [x (range 10)
               y (range 3)]
           ^{:key [x y]}
-          [:rect {:width 1 :height 1 :x x :y y 
-                  :stroke-width 0.01 :stroke "black" :fill "white" :rx "0.25"}])))
+          [:rect {:width 50.5 :height 50.5 :x (* 50.5 x) :y (+ -140 (* 50.5 y)) 
+                  :stroke-width 1 :stroke "black" :fill "white" :rx "10"}])))
 
 (defn letter-cells []
   (into [:g]
@@ -43,7 +43,7 @@
               y (range 3)]
           ^{:key [x y]}
           [:path {:d (:c letter-paths) :stroke "black" 
-                  :transform (str "matrix(1 0 0 -1 0 0) scale(0.07) translate(" (* 720 x) "," (* 720 y) ")" )}])))
+                  :transform (str "matrix(1 0 0 -1 0 0) scale(0.07) translate(" (+ 80 (* 720 x)) "," (* 720 y) ")" )}])))
 
 
 (:a letter-paths)
@@ -52,7 +52,7 @@
    [:h1 "MECCA-Math"]
    [:svg
     {:width    "480px"
-     :view-box "0 -441 529 451"}
+     :view-box "0 -241 529 451"}
    [cells]
     [letter-cells]]])
 

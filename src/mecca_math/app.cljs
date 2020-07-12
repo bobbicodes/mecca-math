@@ -1,9 +1,9 @@
-(ns shadow-reagent.app
+(ns mecca-math.app
   (:require [reagent.core :as r]))
 
 (defn app []
   [:div#app
-   [:h1 "shadow-cljs reagent template"]])
+   [:h1 "MECCA-Math"]])
 
 (defn render []
   (r/render [app]

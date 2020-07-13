@@ -1,7 +1,8 @@
 (ns mecca-math.app
   (:require [reagent.core :as r]
             [mecca-math.letters :as letters]
-            [mecca-math.numbers :as numbers]))
+            [mecca-math.numbers :as numbers]
+            [mecca-math.symbols :as symbols]))
 
 (defn svg-paths
   ([paths]
@@ -36,7 +37,7 @@
         (for [x (range 10)
               y (range 3)]
           ^{:key [x y]}
-          [:path {:d (get numbers/paths 9) :stroke "black"
+          [:path {:d (:equals symbols/paths) :stroke "black"
                   :transform (str "matrix(1 0 0 -1 0 0) scale(0.05) translate(" (+ 100 (* 1060 x)) "," (* 1060 y) ")")}])))
 
 (defn cells []

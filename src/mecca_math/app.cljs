@@ -32,6 +32,15 @@
    [:a :s :d :f :g :h :j :k :l]
    [:z :x :c :v :b :n :m]])
 
+(defn letter-row-1 []
+  (into [:g]
+        (for [x (range 10)]
+          ^{:key [x]}
+          [:path {:d ((get [:q :w :e :r :t :y :u :i :o :p] x) letters/paths) :stroke "black"
+                  :transform (str "matrix(1 0 0 -1 0 0) scale(0.05) translate(" (+ 100 (* 1060 x)) "," 1060 ")")}])))
+
+(get letter-rows 0)
+
 (defn letter-cells []
   (into [:g]
         (for [x (range 10)
@@ -55,7 +64,7 @@
     {:width    "480px"
      :view-box "0 -241 529 451"}
    [cells]
-    [letter-cells]]])
+    [letter-row-1]]])
 
 (defn render []
   (r/render [app]

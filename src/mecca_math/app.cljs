@@ -2,7 +2,13 @@
   (:require [reagent.core :as r]
             [mecca-math.letters :as letters]
             [mecca-math.numbers :as numbers]
-            [mecca-math.symbols :as symbols]))
+            [mecca-math.symbols :as symbols]
+            ["katex" :as katex]))
+
+(defonce latex (r/atom ""))
+
+(defn latex->html [latex]
+  (.renderToString katex latex (clj->js {:throwOnError false})))
 
 (defn svg-paths
   ([paths]
@@ -21,16 +27,9 @@
            [:path {:stroke color
                    :d      path}]))))
 
-(def pixels (r/atom {}))
-
 (def selected-cell (atom nil))
 
 (def mouse-over-cell (atom nil))
-
-(def letter-rows
-  [[:q :w :e :r :t :y :u :i :o :p]
-   [:a :s :d :f :g :h :j :k :l]
-   [:z :x :c :v :b :n :m]])
 
 (defn letter-row-1 []
   (into [:g]
@@ -78,7 +77,14 @@
    [cells]
     [letter-row-1]
     [letter-row-2]
-    [letter-row-3]]])
+    [letter-row-3]]
+[:div [:textarea
+      {:on-change #(reset! latex (-> % .-target .-value))
+       :value @latex
+       :style {:resize "none"
+               :height "50px"
+               :width "100%"}}]]
+   [:div {:dangerouslySetInnerHTML {:__html (latex->html @latex)}}]])
 
 (defn render []
   (r/render [app]

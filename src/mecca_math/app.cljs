@@ -5,7 +5,7 @@
             [mecca-math.symbols :as symbols]
             ["katex" :as katex]))
 
-(defonce latex (r/atom ""))
+(defonce latex (r/atom "\\huge{\\pink{x}=\\dfrac{-\\blue{b}\\pm\\sqrt{\\blue{b}\\purple{^2}-4\\red{a}\\orange{c}}}{2\\red{a}}}"))
 
 (defn latex->html [latex]
   (.renderToString katex latex (clj->js {:throwOnError false})))
@@ -71,19 +71,12 @@
 (defn app []
   [:div#app
    [:h1 "MECCA-Math"]
-   [:svg
-    {:width    "480px"
-     :view-box "0 -241 529 451"}
-   [cells]
-    [letter-row-1]
-    [letter-row-2]
-    [letter-row-3]]
-[:div [:textarea
-      {:on-change #(reset! latex (-> % .-target .-value))
-       :value @latex
-       :style {:resize "none"
-               :height "50px"
-               :width "100%"}}]]
+   [:div [:textarea
+          {:on-change #(reset! latex (-> % .-target .-value))
+           :value @latex
+           :style {:resize "none"
+                   :height "100px"
+                   :width "75%"}}]]
    [:div {:dangerouslySetInnerHTML {:__html (latex->html @latex)}}]])
 
 (defn render []

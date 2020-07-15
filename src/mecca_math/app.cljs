@@ -25,7 +25,9 @@
                                      (if (pos? (first terms))
                                        "+"
                                        "-")
-                                     (when (> (Math/abs (first terms)) 1)
+                                     (when (or 
+                                            (> (Math/abs (first terms)) 1)
+                                            (= 1 (count terms)))
                                        (Math/abs (first terms)))
                                      (when (> (count terms) 1)
                                        v)

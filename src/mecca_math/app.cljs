@@ -20,16 +20,17 @@
                      tex
                      (recur (rest terms)
                             (conj tex
-                                  (str
-                                   (if (pos? (first terms))
-                                     "+"
-                                     "-")
-                                   (when (> (Math/abs (first terms)) 1)
-                                         (Math/abs (first terms)))
-                                   (when (> (count terms) 1)
-                                     v)
-                                   (when (> (count terms) 2)
-                                     (str "^" (dec (count terms))))))))))]
+                                  (when-not (zero? (first terms))
+                                    (str
+                                     (if (pos? (first terms))
+                                       "+"
+                                       "-")
+                                     (when (> (Math/abs (first terms)) 1)
+                                       (Math/abs (first terms)))
+                                     (when (> (count terms) 1)
+                                       v)
+                                     (when (> (count terms) 2)
+                                       (str "^" (dec (count terms)))))))))))]
     (if (= "+" (first s))
       (subs s 1)
       s)))

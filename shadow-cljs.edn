@@ -1,5 +1,5 @@
 ;; shadow-cljs configuration
-{:source-paths ["src"]
+{:source-paths ["src" "test"]
 
  :dependencies [[reagent "0.9.0-rc4"]]
 
@@ -8,4 +8,8 @@
  :builds       {:app {:asset-path "/js"
                       :output-dir "public/js"
                       :target  :browser
-                      :modules {:main {:init-fn mecca-math.app/init}}}}}
+                      :modules {:main {:init-fn mecca-math.app/init}}}
+                :test {:target :browser-test
+                       :test-dir "public/js/test"
+                       :devtools  {:http-port          8021
+                                   :http-root          "resources/public/js/test"}}}}

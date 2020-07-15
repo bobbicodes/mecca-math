@@ -3,20 +3,20 @@
 ;TYPES
 (defrecord Rational [^long numerator ^long denominator])
 
-(defmethod print-method Rational [v ^java.io.Writer w]
+#_(defmethod print-method Rational [v ^java.io.Writer w]
   (print-method (:numerator v) w)
   (.write w "/")
   (print-method (:denominator v) w))
 
 (defrecord Complex [^long real ^long imaginary])
 
-(defmethod print-method Complex [v ^java.io.Writer w]
+#_(defmethod print-method Complex [v ^java.io.Writer w]
   (print-method (:real v) w)
   (.write w "+")
   (print-method (:imaginary v) w)
   (.write w "i"))
 (defrecord Poly [variable term-list])
-(defmethod print-method Poly [v ^java.io.Writer w]
+#_(defmethod print-method Poly [v ^java.io.Writer w]
   (print-method (:variable v) w)
   (.write w ":")
   (print-method (:term-list v) w))
@@ -121,7 +121,7 @@
                                     (Math/abs (long (- a b))) ;; coerce to avoid reflection
                                     1) (min a b))))
 (defn extended-gcd [a b]
-  (let [class-a (class a)]
+  (let [class-a (.typeof a)]
     (cond
       (number? a)        (gcd a b)
       (= class-a Rational) (reduce gcd (list (numer a) (denom a) (numer b) (denom b)))
@@ -134,8 +134,8 @@
 
 ;TYPE COERCION
 (defn raise-types [a b proc]
-  (let [class-a (class a)
-        class-b (class b)]
+  (let [class-a (.typeof a)
+        class-b (.typeof b)]
     (cond
       (and (number? a)          (= class-b Rational))  (proc (Rational. a 1) b)
       (and (number? a)          (= class-b Complex))   (proc (Complex. a 0) b)
@@ -151,7 +151,7 @@
       (and (= class-a Poly)     (= class-b Complex))   (proc a (Poly. (variable a) (list (list 0 b)))))))
 
 (defn reduce-type [a]
-  (let [class-a (class a)]
+  (let [class-a (.typeof a)]
     (cond
       (and (= class-a Rational)
            (= (denom a) 1))                          (numer a)
@@ -165,56 +165,56 @@
 (extend-type Number
   Algebra
   (add [a b]
-    (if (= (class a) (class b))
+    (if (= (class a) (.typeof b))
       (+ a b)
       (raise-types a b add)))
   (sub [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (- a b)
       (raise-types a b sub)))
   (mul [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (* a b)
       (raise-types a b mul)))
   (div [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (/ a b)
       (raise-types a b div)))
   (equal? [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (= a b)
       (raise-types a b equal?))))
 
 (extend-type Rational
   Algebra
   (add [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (make-rat (add (mul (numer a) (denom b))
                       (mul (numer b) (denom a)))
                  (mul (denom a) (denom b))))
       (raise-types a b add)))
   (sub [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (make-rat (sub (mul (numer a) (denom b))
                       (mul (numer b) (denom a)))
                  (mul (denom a) (denom b))))
       (raise-types a b sub)))
   (mul [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (make-rat (mul (numer a) (numer b))
                  (mul (denom a) (denom b))))
       (raise-types a b mul)))
   (div [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (make-rat (mul (numer a) (denom b))
                  (mul (denom a) (numer b))))
       (raise-types a b div)))
   (equal? [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (let [simple-a (make-rat (numer a) (denom a))
             simple-b (make-rat (numer b) (denom b))]
         (if (and (equal? (numer simple-a) (numer simple-b))
@@ -226,31 +226,31 @@
 (extend-type Complex
   Algebra
   (add [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (make-from-real-imag (add (real-part a) (real-part b))
                             (add (imag-part a) (imag-part b))))
       (raise-types a b add)))
   (sub [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (make-from-real-imag (sub (real-part a) (real-part b))
                             (sub (imag-part a) (imag-part b))))
       (raise-types a b sub)))
   (mul [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (make-from-mag-ang (mul (magnitude a) (magnitude b))
                           (add (angle a) (angle b))))
       (raise-types a b mul)))
   (div [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (make-from-mag-ang (div (magnitude a) (magnitude b))
                           (sub (angle a) (angle b))))
       (raise-types a b div)))
   (equal? [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (if (and (equal? (real-part a) (real-part b))
                (equal? (imag-part a) (imag-part b)))
         true
@@ -316,7 +316,7 @@
 (extend-type Poly
   Algebra
   (add [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (if (= (variable a) (variable b))
          (Poly. (variable a)
@@ -326,7 +326,7 @@
                   (list a b))))
       (raise-types a b add)))
   (sub [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (if (= (variable a) (variable b))
          (Poly. (variable a)
@@ -336,7 +336,7 @@
                   (list a b))))
       (raise-types a b sub)))
   (mul [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (if (= (variable a) (variable b))
          (Poly. (variable a)
@@ -346,7 +346,7 @@
                   (list a b))))
       (raise-types a b mul)))
   (div [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (if (= (variable a) (variable b))
          (let [result (div-terms (term-list a)
@@ -356,7 +356,7 @@
                   (list a b))))
       (raise-types a b div)))
   (equal? [a b]
-    (if (= (class a) (class b))
+    (if (= (.typeof a) (.typeof b))
       (reduce-type
        (let [sparse-a (dense-to-sparse a)
              sparse-b (dense-to-sparse b)]

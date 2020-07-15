@@ -3,7 +3,7 @@
             ["katex" :as katex]
             [clojure.edn :as edn]))
 
-(defonce variable (r/atom "x"))
+(defonce var (r/atom "x"))
 (defonce coeffs (r/atom "[2 7 -6]"))
 (defonce latex (r/atom "2x^2+7x-6"))
 
@@ -24,7 +24,8 @@
                                    (if (pos? (first terms))
                                      "+"
                                      "-")
-                                   (Math/abs (first terms))
+                                   (when (> (Math/abs (first terms)) 1)
+                                         (Math/abs (first terms)))
                                    (when (> (count terms) 1)
                                      v)
                                    (when (> (count terms) 2)
@@ -39,18 +40,20 @@
 
 (defn app []
   [:div#app
+   [:h1 "Polynomial playground"]
    [:h2 "Coefficients:"]
    [:div [:textarea
-          {:on-change #(do (reset! coeffs (-> % .-target .-value))
-                           (reset! latex (poly->latex (edn/read-string (-> % .-target .-value)) @variable)))
+          {:on-change 
+           #(do (reset! coeffs (-> % .-target .-value))
+                (reset! latex (poly->latex (edn/read-string (-> % .-target .-value)) @var)))
            :value @coeffs
            :style {:resize "none"
                    :height "20px"
                    :width "34%"}}]]
    [:h2 "Variable:"]
    [:textarea
-    {:on-change #(reset! variable (-> % .-target .-value))
-     :value @variable
+    {:on-change #(reset! var (-> % .-target .-value))
+     :value @var
      :style {:resize "none"
              :height "20px"
              :width "5%"}}]
@@ -59,8 +62,8 @@
           {:on-change #(reset! latex (-> % .-target .-value))
            :value @latex
            :style {:resize "none"
-                   :height "100px"
-                   :width "75%"}}]]
+                   :height "50px"
+                   :width "67%"}}]]
    [:h2 "Rendered output:"]
    [:div {:dangerouslySetInnerHTML {:__html (latex->html @latex)}}]])
 

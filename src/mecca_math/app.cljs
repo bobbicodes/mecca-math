@@ -4,8 +4,10 @@
             [clojure.edn :as edn]))
 
 (defonce var (r/atom "x"))
-(defonce coeffs (r/atom "[2 7 -6]"))
-(defonce latex (r/atom "2x^2+7x-6"))
+(defonce coeffs (r/atom "[1 4 3 0]"))
+(defonce coeffs2 (r/atom "[1 5 0 0]"))
+(defonce latex (r/atom "x^3+4x^2+3x"))
+(defonce latex2 (r/atom "x^3+5x^2"))
 
 (defn latex->html [latex]
   (.renderToString katex latex (clj->js {:throwOnError false})))
@@ -43,32 +45,40 @@
 
 (defn app []
   [:div#app
-   [:h1 "Polynomial playground"]
-   [:h2 "Coefficients:"]
-   [:div [:textarea
+   [:h2 "Enter 2 polynomials:"]
+   [:div "Variable: "
+    [:textarea
+     {:on-change #(reset! var (-> % .-target .-value))
+      :value @var
+      :style {:resize "none"
+              :height "16px"
+              :width "4%"}}]]
+   [:p]
+    [:textarea
           {:on-change 
            #(do (reset! coeffs (-> % .-target .-value))
                 (reset! latex (poly->latex (edn/read-string (-> % .-target .-value)) @var)))
            :value @coeffs
            :style {:resize "none"
                    :height "20px"
-                   :width "34%"}}]]
-   [:h2 "Variable:"]
-   [:textarea
-    {:on-change #(reset! var (-> % .-target .-value))
-     :value @var
-     :style {:resize "none"
-             :height "20px"
-             :width "5%"}}]
-   [:h2 "LaTeX:"]
-   [:div [:textarea
+                   :width "34%"}}]
+   #_[:div [:textarea
           {:on-change #(reset! latex (-> % .-target .-value))
            :value @latex
            :style {:resize "none"
-                   :height "50px"
-                   :width "67%"}}]]
-   [:h2 "Rendered output:"]
-   [:div {:dangerouslySetInnerHTML {:__html (latex->html @latex)}}]])
+                   :height "20px"
+                   :width "34%"}}]]
+    [:div {:dangerouslySetInnerHTML {:__html (latex->html @latex)}}]
+   [:p]
+    [:textarea
+     {:on-change
+      #(do (reset! coeffs2 (-> % .-target .-value))
+           (reset! latex2 (poly->latex (edn/read-string (-> % .-target .-value)) @var)))
+      :value @coeffs2
+      :style {:resize "none"
+              :height "20px"
+              :width "34%"}}]
+   [:div {:dangerouslySetInnerHTML {:__html (latex->html @latex2)}}]])
 
 (defn render []
   (r/render [app]

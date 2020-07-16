@@ -59,6 +59,9 @@
 (defn multiply [poly1 poly2]
   (reset! output (poly/mult-poly poly1 poly2)))
 
+(defn div [poly1 poly2]
+  (reset! output (poly/div-poly poly1 poly2)))
+
 (defn app []
   [:div#app
    [:h2 "Enter 2 polynomials:"]
@@ -98,7 +101,7 @@
    [button "Add" #(add (edn/read-string @coeffs) (edn/read-string @coeffs2))]
    [button "Subtract" #(subtract (edn/read-string @coeffs) (edn/read-string @coeffs2))]
    [button "Multiply" #(multiply (edn/read-string @coeffs) (edn/read-string @coeffs2))]
-   [button "Divide" nil]
+   #_[button "Divide" #(div (edn/read-string @coeffs) (edn/read-string @coeffs2))]
    [:p]
    (when @output
      [:div {:dangerouslySetInnerHTML

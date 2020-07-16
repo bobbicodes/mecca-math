@@ -113,8 +113,19 @@
    :term-list (mul-terms (:term-list a)
                          (:term-list b))})
 
+(defn divide-poly [a b]
+  {:variable
+   (when (= (:variable a) (:variable b))
+     (:variable a))
+   :term-list (div-terms (:term-list a)
+                         (:term-list b))})
+
 (defn mult-poly [poly1 poly2]
   (:term-list (sparse-to-dense (mul-poly (dense-to-sparse (poly 'x poly1)) (dense-to-sparse (poly 'x poly2))))))
 
+(defn div-poly [poly1 poly2]
+  (:term-list (sparse-to-dense (divide-poly (dense-to-sparse (poly 'x poly1)) (dense-to-sparse (poly 'x poly2))))))
+
 (comment
+  (divide-poly (poly 'x [1 0 0 -3 2 0]) (poly 'x [1 0]))
   (sub-poly [-9 0 0 0 8] [-9 2 5 0 0]))

@@ -29,7 +29,7 @@
    (fn [t]
      [(first t)
      (- 0 (last t))]))
-   termlist))
+   termlist)
 
 (defn add-terms [l1 l2]
   (cond
@@ -63,9 +63,12 @@
     (add-terms (mul-term-by-all-terms (first l1) l2)
                (mul-terms (rest l1) l2))))
 
+(defn sub-poly [poly1 poly2]
+  (map #(- % %2) poly1 poly2))
+
 (defn div-terms [l1 l2]
   (if (empty? l1)
-    l1(sub-poly [-9 0 0 0 8] [-9 2 5 0 0])
+    l1
     (let [t1 (first l1)
           t2 (first l2)]
       (if (> (first t2) (first t1))
@@ -89,9 +92,6 @@
                    (:variable a))
    :term-list (mul-terms (:term-list a)
                          (:term-list b))})
-
-(defn sub-poly [poly1 poly2]
-  (map #(- % %2) poly1 poly2))
 
 (defn mult-poly [poly1 poly2]
   (:term-list (sparse-to-dense (mul-poly (dense-to-sparse (poly 'x poly1)) (dense-to-sparse (poly 'x poly2))))))

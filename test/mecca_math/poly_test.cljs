@@ -1,6 +1,6 @@
 (ns mecca-math.poly-test
   (:require [clojure.test :refer [deftest testing is run-tests]]
-            [mecca-math.poly :refer [mult-poly sub poly]]))
+            [mecca-math.poly :refer [mult-poly sub-poly]]))
 
 (deftest add-and-subtract-test
   (testing "Subtract polynomials."
@@ -31,3 +31,5 @@
     (is (= [-9 0 0 0 0 0 0 0 0 0 64 0 0 0 0] (mult-poly [3 0 0 0 0 8 0 0] [-3 0 0 0 0 8 0 0])))
     (is (= [25 0 0 0 0 0 -4] (mult-poly [5 0 0 -2] [5 0 0 2])))
     (is (= [4 0 -9 0 0 0 0 0 0] (mult-poly [2 3 0 0 0] [2 -3 0 0 0])))))
+
+;(run-tests)

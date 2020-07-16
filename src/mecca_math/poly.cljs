@@ -63,6 +63,26 @@
     (add-terms (mul-term-by-all-terms (first l1) l2)
                (mul-terms (rest l1) l2))))
 
+(defn add-poly [poly1 poly2]
+  (:term-list
+   (sparse-to-dense
+    (poly 'x
+          (add-terms
+           (:term-list
+            (dense-to-sparse (poly 'x poly1)))
+           (:term-list (dense-to-sparse (poly 'x poly2))))))))
+
+(comment
+
+  (:term-list (sparse-to-dense (poly 'x (add-terms (:term-list (dense-to-sparse (poly 'x [-1 -5 -10 0 0])))
+                                                   (:term-list (dense-to-sparse (poly 'x [9 3 0 -1])))))))
+  
+  (add-poly [-1 -5 -10 0 0] [9 3 0 -1])
+  (add-poly [-2 -7 5 0] [6 3 0])
+  (add-poly [-1 8 -3 0] [-8 1 3])
+  
+  )
+
 (defn sub-poly [poly1 poly2]
   (map #(- % %2) poly1 poly2))
 

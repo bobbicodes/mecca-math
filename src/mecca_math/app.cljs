@@ -50,6 +50,9 @@
    {:on-click onclick}
    label])
 
+(defn add [poly1 poly2]
+  (reset! output (poly/add-poly poly1 poly2)))
+
 (defn subtract [poly1 poly2]
   (reset! output (poly/sub-poly poly1 poly2)))
 
@@ -92,7 +95,7 @@
              :height "20px"
              :width "34%"}}]
    [:div {:dangerouslySetInnerHTML {:__html (latex->html @latex2)}}]
-   [button "Add" nil]
+   [button "Add" #(add (edn/read-string @coeffs) (edn/read-string @coeffs2))]
    [button "Subtract" #(subtract (edn/read-string @coeffs) (edn/read-string @coeffs2))]
    [button "Multiply" #(multiply (edn/read-string @coeffs) (edn/read-string @coeffs2))]
    [button "Divide" nil]

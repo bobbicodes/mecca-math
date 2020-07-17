@@ -104,13 +104,13 @@
 ; = x^4 - 3x + 2
 
 (defn div-term [t1 t2]
-  [(- (first t1) (last t2))
+  [(- (first t1) (first t2))
    (last t1)])
 
 (div-term [5 1] [1 1])
 
 (defn div-terms [l1 l2]
-  (map #(div-term % (first l2)) l1))
+  (mapv #(div-term % (first l2)) l1))
 
 (div-terms [[5 1] [2 -3] [1 2]] [[1 1]])
 

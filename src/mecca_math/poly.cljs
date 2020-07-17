@@ -86,26 +86,33 @@
 (defn sub-poly [poly1 poly2]
   (map #(- % %2) poly1 poly2))
 
+; https://www.khanacademy.org/math/algebra2/x2ec2f6f830c9fb89:poly-div/x2ec2f6f830c9fb89:poly-div-by-x/e/poly-by-x-no-remainders
+; Divide the polynomials.
+; Your answer should be a polynomial.
+
+; (x^5 - 3x^2 + 2x) / x
+; 
+; Usually, there are many different ways to divide polynomials. Here, we will use the method of factoring and canceling common factors.
+; Try to factor the numerator, and see if you end up with a common factor to cancel with the denominator.
+; 
+; x(x^4 - 3x + 2)
+
+; Another way to perform this division is by splitting the quotient into multiple quotients:
+
+; (x^5 / x) - (3x^2 / x) + (2x / x)
+
+; = x^4 - 3x + 2
+
+(defn div-term [t1 t2]
+  [(- (first t1) (last t2))
+   (last t1)])
+
+(div-term [5 1] [1 1])
+
 (defn div-terms [l1 l2]
-  (if (empty? l1)
-    l1
-    (let [t1 (first l1)
-          t2 (first l2)]
-      (if (> (first t2) (first t1))
-        l1
-        (let [new-c (/ (last t1) (last t2))
-              new-o (- (first t1) (first t2))]
-          (let [rest-of-result
-                (div-terms
-                 (add-terms l1
-                            (negate-terms
-                             (mul-terms l2
-                                        (list
-                                         [new-o new-c]))))
-                 l2)]
-            (list (cons [new-o new-c]
-                               (first rest-of-result))
-                  (fnext rest-of-result))))))))
+  (map #(div-term % (first l2)) l1))
+
+(div-terms [[5 1] [2 -3] [1 2]] [[1 1]])
 
 (defn mul-poly [a b]
   {:variable (when (= (:variable a) (:variable b))
@@ -127,5 +134,9 @@
   (:term-list (sparse-to-dense (divide-poly (dense-to-sparse (poly 'x poly1)) (dense-to-sparse (poly 'x poly2))))))
 
 (comment
-  (divide-poly (poly 'x [1 0 0 -3 2 0]) (poly 'x [1 0]))
+
+  (:term-list (dense-to-sparse (poly 'x [1 0 0 -3 2 0])))
+  (:term-list (dense-to-sparse (poly 'x [1 0])))
+  
+  (:term-list (sparse-to-dense (divide-poly (dense-to-sparse (poly 'x [1 0 0 -3 2 0])) (dense-to-sparse (poly 'x [1 0])))))
   (sub-poly [-9 0 0 0 8] [-9 2 5 0 0]))

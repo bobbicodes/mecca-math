@@ -101,7 +101,7 @@
    [button "Add" #(add (edn/read-string @coeffs) (edn/read-string @coeffs2))]
    [button "Subtract" #(subtract (edn/read-string @coeffs) (edn/read-string @coeffs2))]
    [button "Multiply" #(multiply (edn/read-string @coeffs) (edn/read-string @coeffs2))]
-   #_[button "Divide" #(div (edn/read-string @coeffs) (edn/read-string @coeffs2))]
+   [button "Divide" #(div (edn/read-string @coeffs) (edn/read-string @coeffs2))]
    [:p]
    (when @output
      [:div {:dangerouslySetInnerHTML

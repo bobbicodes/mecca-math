@@ -107,12 +107,14 @@
   [(- (first t1) (first t2))
    (last t1)])
 
-(div-term [5 1] [1 1])
+(comment
+  (div-term [5 1] [1 1]))
 
 (defn div-terms [l1 l2]
   (mapv #(div-term % (first l2)) l1))
 
-(div-terms [[5 1] [2 -3] [1 2]] [[1 1]])
+(comment
+  (div-terms [[5 1] [2 -3] [1 2]] [[1 1]]))
 
 (defn mul-poly [a b]
   {:variable (when (= (:variable a) (:variable b))
@@ -135,6 +137,8 @@
 
 (comment
 
+(div-poly [1 0 0 -3 2 0] [1 0])
+  
   (:term-list (dense-to-sparse (poly 'x [1 0 0 -3 2 0])))
   (:term-list (dense-to-sparse (poly 'x [1 0])))
   

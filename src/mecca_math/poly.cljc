@@ -97,11 +97,17 @@
 ; 
 ; x(x^4 - 3x + 2)
 
+
+
+
+
 ; Another way to perform this division is by splitting the quotient into multiple quotients:
 
 ; (x^5 / x) - (3x^2 / x) + (2x / x)
 
 ; = x^4 - 3x + 2
+
+(dense-to-sparse (poly 'x [2 0]))
 
 (defn div-term [t1 t2]
   [(- (first t1) (first t2))

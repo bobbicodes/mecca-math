@@ -108,13 +108,16 @@
 ; = x^4 - 3x + 2
 
 (dense-to-sparse (poly 'x [2 0]))
+(dense-to-sparse (poly 'x [2]))
+
+{:variable 'x, :term-list [[1 2]]}
 
 (defn div-term [t1 t2]
   [(- (first t1) (first t2))
-   (last t1)])
+   (/ (last t1) (last t2))])
 
 (comment
-  (div-term [5 1] [1 1]))
+  (div-term [1 2] [0 2]))
 
 (defn div-terms [l1 l2]
   (mapv #(div-term % (first l2)) l1))

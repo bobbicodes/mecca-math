@@ -107,19 +107,55 @@
 
 ; = x^4 - 3x + 2
 
-(dense-to-sparse (poly 'x [2 0]))
-(dense-to-sparse (poly 'x [2]))
+(dense-to-sparse (poly 'x [5 0 0 0 9]))
+(dense-to-sparse (poly 'x [1 0]))
 
-{:variable 'x, :term-list [[1 2]]}
+(dense-to-sparse (poly 'x [5 0 0 0]))
 
-(defn div-term [t1 t2]
+(defn div-term
+  "Takes 2 vectors containing the coefficients (dense-form)
+   of a polynomial term, and divides the first by the second."
+  [t1 t2]
   [(- (first t1) (first t2))
    (/ (last t1) (last t2))])
 
 (comment
-  (div-term [1 2] [0 2]))
+  (div-term [4 5] [1 1]))
+
+; Divide polynomials by x (with remainders)
+; https://www.khanacademy.org/math/algebra2/x2ec2f6f830c9fb89:poly-div/x2ec2f6f830c9fb89:poly-div-by-x/e/poly-by-x-remainders
+
+; Divide the polynomials:
+; (5x^4+9) / x	
+; The answer must be in the form:
+; p(x)+\dfrac{k}{x}
+; where p is a polynomial and k is an integer.
+
+ 
 
 (defn div-terms [l1 l2]
+  (if (empty? l1)
+    l1
+    (let [t1 (first l1)
+          t2 (first l2)]
+      (if (> (first t2) (first t1))
+        l1
+        (let [new-c (/ (last t1) (last t2))
+              new-o (- (first t1) (first t2))
+              rest-of-result (div-terms
+                              (add-terms l1
+                                         (negate-terms
+                                          (mul-terms l2
+                                                     [[new-o new-c]])))
+                              l2)]
+          [(cons [new-o new-c]
+                 (first rest-of-result))
+           (fnext rest-of-result)])))))
+
+; Expected LaTeX output:
+; 5x^3+\dfrac{9}{x}
+
+#_(defn div-terms [l1 l2]
   (mapv #(div-term % (first l2)) l1))
 
 (comment
@@ -144,8 +180,12 @@
 (defn div-poly [poly1 poly2]
   (:term-list (sparse-to-dense (divide-poly (dense-to-sparse (poly 'x poly1)) (dense-to-sparse (poly 'x poly2))))))
 
+
+
 (comment
 
+(poly "x" [5 0 0 0 9])
+  
 (div-poly [1 0 0 -3 2 0] [1 0])
   
   (:term-list (dense-to-sparse (poly 'x [1 0 0 -3 2 0])))
@@ -153,3 +193,22 @@
   
   (:term-list (sparse-to-dense (divide-poly (dense-to-sparse (poly 'x [1 0 0 -3 2 0])) (dense-to-sparse (poly 'x [1 0])))))
   (sub-poly [-9 0 0 0 8] [-9 2 5 0 0]))
+
+(defn prime-factors
+  ([n] (prime-factors 2 n))
+  ([f n]
+   (when (> n 1)
+     (if (zero? (mod n f))
+       (cons f (prime-factors f (/ n f)))
+       (recur (inc f) n)))))
+
+(defn perfect-squares [s]
+  (loop [items (sort s) pairs []]
+    (if (empty? items) pairs
+        (if (= (first items) (second items))
+          (recur (drop 2 items) (conj pairs (first items)))
+          (recur (rest items) pairs)))))
+
+(defn simplify-sqrt [sqrt]
+  (let [sq (reduce * (perfect-squares (prime-factors sqrt)))]
+    [sq (/ sqrt (* sq sq))]))

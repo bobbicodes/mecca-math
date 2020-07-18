@@ -2,7 +2,8 @@
   (:require [reagent.core :as r]
             ["katex" :as katex]
             [clojure.edn :as edn]
-            [mecca-math.poly :as poly]))
+            [mecca-math.poly :as poly]
+            [mecca-math.latex :as latex]))
 
 (defonce var (r/atom "x"))
 (defonce coeffs (r/atom "[1 4 3 0]"))
@@ -14,35 +15,8 @@
 (defn latex->html [latex]
   (.renderToString katex latex (clj->js {:throwOnError false})))
 
-(defn poly->latex
-  "Takes a sequence of polynomial terms in dense-form
-   and a variable letter, returns a string of LaTeX output."
-  [coeffs v]
-  (let [s (apply str
-                 (loop [terms coeffs tex []]
-                   (if (empty? terms)
-                     tex
-                     (recur (rest terms)
-                            (conj tex
-                                  (when-not (zero? (first terms))
-                                    (str
-                                     (if (pos? (first terms))
-                                       "+"
-                                       "-")
-                                     (when (or 
-                                            (> (Math/abs (first terms)) 1)
-                                            (= 1 (count terms)))
-                                       (Math/abs (first terms)))
-                                     (when (> (count terms) 1)
-                                       v)
-                                     (when (> (count terms) 2)
-                                       (str "^" (dec (count terms)))))))))))]
-    (if (= "+" (first s))
-      (subs s 1)
-      s)))
-
 (comment
-  (poly->latex [2 7 -6] "x")
+  (latex/poly->latex [2 7 -6] "x")
   )
 
 (defn button [label onclick]
@@ -76,12 +50,12 @@
    [:textarea
     {:on-change
      #(do (reset! coeffs (-> % .-target .-value))
-          (reset! latex (poly->latex (edn/read-string (-> % .-target .-value)) @var)))
+          (reset! latex (latex/poly->latex (edn/read-string (-> % .-target .-value)) @var)))
      :value @coeffs
      :style {:resize "none"
              :height "20px"
              :width "34%"}}]
-   #_[:div [:textarea
+   [:div#latex [:textarea
             {:on-change #(reset! latex (-> % .-target .-value))
              :value @latex
              :style {:resize "none"
@@ -92,11 +66,17 @@
    [:textarea
     {:on-change
      #(do (reset! coeffs2 (-> % .-target .-value))
-          (reset! latex2 (poly->latex (edn/read-string (-> % .-target .-value)) @var)))
+          (reset! latex2 (latex/poly->latex (edn/read-string (-> % .-target .-value)) @var)))
      :value @coeffs2
      :style {:resize "none"
              :height "20px"
              :width "34%"}}]
+   [:div#latex2 [:textarea
+                {:on-change #(reset! latex2 (-> % .-target .-value))
+                 :value @latex2
+                 :style {:resize "none"
+                         :height "20px"
+                         :width "34%"}}]]
    [:div {:dangerouslySetInnerHTML {:__html (latex->html @latex2)}}]
    [button "Add" #(add (edn/read-string @coeffs) (edn/read-string @coeffs2))]
    [button "Subtract" #(subtract (edn/read-string @coeffs) (edn/read-string @coeffs2))]
@@ -107,7 +87,7 @@
      [:div {:dangerouslySetInnerHTML
             {:__html (latex->html
                       (str "\\huge{"
-                           (poly->latex @output @var)
+                           (latex/poly->latex @output @var)
                            "}"))}}])])
 
 (defn render []

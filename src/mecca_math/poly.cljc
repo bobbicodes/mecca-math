@@ -116,8 +116,11 @@
   "Takes 2 vectors containing the order and coefficient (sparse-form)
    of 2 polynomial terms, and divides the first by the second."
   [t1 t2]
-  [(- (first t1) (first t2))
-   (/ (last t1) (last t2))])
+  (if (> (first t2) (first t1))
+    {:error (str "Cannot divide order " (first t1) " by order " (first t2))
+     :remainder (last t1)}
+    [(- (first t1) (first t2))
+     (/ (last t1) (last t2))]))
 
 (comment
   (div-term [4 5] [1 1]))
@@ -130,10 +133,29 @@
 ; The answer must be in the form:
 ; p(x)+\dfrac{k}{x}
 ; where p is a polynomial and k is an integer.
+; LaTeX rendering is handled by the latex/div function,
+; which takes a map containing a variable, term-list
+; and optional integer remainder.
+; so here our division function needs to output:
 
- 
+; {:variable "x"
+;  :term-list [[3 5]]
+;  :remainder 9}
 
-(defn div-terms [l1 l2]
+(dense-to-sparse (poly "x" [5 0 0 0 9]))
+
+; 1st polynomial's term-list:
+; [[4 5] [0 9]]
+; 
+; Divide this by x:
+; [[1 1]]
+
+(div-term [4 5] [1 1])
+; 5x^4 divided by x is 5x^3
+
+(div-term [0 9] [1 1])
+
+#_(defn div-terms [l1 l2]
   (if (empty? l1)
     l1
     (let [t1 (first l1)
@@ -152,21 +174,12 @@
                  (first rest-of-result))
            (fnext rest-of-result)])))))
 
-; Expected LaTeX output:
-; 5x^3+\dfrac{9}{x}
-; this will now be handled by the latex/poly-with-remainder function,
-; which takes a vector of coefficients, variable and an integer remainder.
-; so here our division function needs to output:
-
-; {:variable "x"
-;  :term-list [[3 5]]
-;  :remainder 9}
-
-#_(defn div-terms [l1 l2]
+(defn div-terms [l1 l2]
   (mapv #(div-term % (first l2)) l1))
 
 (comment
-  (div-terms [[5 1] [2 -3] [1 2]] [[1 1]]))
+
+  (div-terms [[4 5] [0 9]] [[1 1]]))
 
 (defn mul-poly [a b]
   {:variable (when (= (:variable a) (:variable b))
@@ -175,11 +188,22 @@
                          (:term-list b))})
 
 (defn divide-poly [a b]
-  {:variable
-   (when (= (:variable a) (:variable b))
-     (:variable a))
-   :term-list (div-terms (:term-list a)
-                         (:term-list b))})
+  (let [div (div-terms (:term-list (dense-to-sparse a))
+                      (:term-list (dense-to-sparse b)))]
+    {:variable (when (= (:variable a) (:variable b))
+                 (:variable a))
+     :term-list (vec (if (:remainder (last div))
+                       (butlast div)
+                       div))
+     :remainder (when (:remainder (last div))
+                  (:remainder (last div)))}))
+
+(comment
+
+  (last (div-terms (:term-list (dense-to-sparse (poly "x" [5 0 0 0 9])))
+                   (:term-list (dense-to-sparse (poly "x" [1 0])))))
+
+  (divide-poly (poly "x" [5 0 0 0 9]) (poly "x" [1 0])))
 
 (defn mult-poly [poly1 poly2]
   (:term-list (sparse-to-dense (mul-poly (dense-to-sparse (poly 'x poly1)) (dense-to-sparse (poly 'x poly2))))))
@@ -191,14 +215,14 @@
 
 (comment
 
-(poly "x" [5 0 0 0 9])
+  (poly "x" [5 0 0 0 9])
   (poly "x" [1 0])
-  
-(div-poly [1 0 0 -3 2 0] [1 0])
-  
+
+  (div-poly [1 0 0 -3 2 0] [1 0])
+
   (:term-list (dense-to-sparse (poly 'x [1 0 0 -3 2 0])))
   (:term-list (dense-to-sparse (poly 'x [1 0])))
-  
+
   (:term-list (sparse-to-dense (divide-poly (dense-to-sparse (poly 'x [1 0 0 -3 2 0])) (dense-to-sparse (poly 'x [1 0])))))
   (sub-poly [-9 0 0 0 8] [-9 2 5 0 0]))
 

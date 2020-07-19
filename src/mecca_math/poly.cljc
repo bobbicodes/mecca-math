@@ -204,8 +204,10 @@
                    (:term-list (dense-to-sparse (poly "x" [1 0])))))
 
   (sparse-to-dense (poly "x" [[3 5]]))
-  
-  (divide-poly (poly "x" [5 0 0 0 9]) (poly "x" [1 0])))
+  (divide-poly (poly "x" [1 0 0 -3 2 0]) (poly "x" [1 0]))
+  (divide-poly (poly "x" [5 0 0 0 9]) (poly "x" [1 0]))
+  (divide-poly (poly "x" [2 0 0 5 4]) (poly "x" [1 0]))
+  )
 
 (defn mult-poly [poly1 poly2]
   (:term-list (sparse-to-dense (mul-poly (dense-to-sparse (poly 'x poly1)) (dense-to-sparse (poly 'x poly2))))))

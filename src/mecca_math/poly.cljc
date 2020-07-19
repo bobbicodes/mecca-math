@@ -113,8 +113,8 @@
 (dense-to-sparse (poly 'x [5 0 0 0]))
 
 (defn div-term
-  "Takes 2 vectors containing the coefficients (dense-form)
-   of a polynomial term, and divides the first by the second."
+  "Takes 2 vectors containing the order and coefficient (sparse-form)
+   of 2 polynomial terms, and divides the first by the second."
   [t1 t2]
   [(- (first t1) (first t2))
    (/ (last t1) (last t2))])

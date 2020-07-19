@@ -34,7 +34,7 @@
   (reset! output (poly/mult-poly poly1 poly2)))
 
 (defn div [poly1 poly2]
-  (reset! output (poly/div-poly poly1 poly2)))
+  (reset! output (latex/div (poly/div-poly poly1 poly2))))
 
 (defn app []
   [:div#app

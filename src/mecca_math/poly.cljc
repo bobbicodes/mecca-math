@@ -19,7 +19,7 @@
     :term-list
     (->> (:term-list p)
        (reverse)
-       (map-indexed #(if (not= %2 0)  [%1 %2]))
+       (map-indexed #(when (not= %2 0)  [%1 %2]))
        (filter some?)
        (reverse)
        vec)})
@@ -154,6 +154,13 @@
 
 ; Expected LaTeX output:
 ; 5x^3+\dfrac{9}{x}
+; this will now be handled by the latex/poly-with-remainder function,
+; which takes a vector of coefficients, variable and an integer remainder.
+; so here our division function needs to output:
+
+; {:variable "x"
+;  :term-list [[3 5]]
+;  :remainder 9}
 
 #_(defn div-terms [l1 l2]
   (mapv #(div-term % (first l2)) l1))
@@ -185,6 +192,7 @@
 (comment
 
 (poly "x" [5 0 0 0 9])
+  (poly "x" [1 0])
   
 (div-poly [1 0 0 -3 2 0] [1 0])
   

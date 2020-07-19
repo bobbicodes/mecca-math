@@ -34,7 +34,15 @@
   (reset! output (poly/mult-poly poly1 poly2)))
 
 (defn div [poly1 poly2]
-  (reset! output (latex/div (poly/div-poly poly1 poly2))))
+  (reset! output (latex/div (poly/divide-poly (poly/poly @var poly1) (poly/poly @var poly2)))))
+
+(latex/div (poly/divide-poly (poly/poly @var [5 0 0 0 9])
+                             (poly/poly @var [1 0])))
+
+@coeffs
+@coeffs2
+
+@output
 
 (defn app []
   [:div#app
@@ -55,7 +63,7 @@
      :style {:resize "none"
              :height "20px"
              :width "34%"}}]
-   [:div#latex [:textarea
+   #_[:div#latex [:textarea
             {:on-change #(reset! latex (-> % .-target .-value))
              :value @latex
              :style {:resize "none"
@@ -71,7 +79,7 @@
      :style {:resize "none"
              :height "20px"
              :width "34%"}}]
-   [:div#latex2 [:textarea
+   #_[:div#latex2 [:textarea
                 {:on-change #(reset! latex2 (-> % .-target .-value))
                  :value @latex2
                  :style {:resize "none"
@@ -87,7 +95,8 @@
      [:div {:dangerouslySetInnerHTML
             {:__html (latex->html
                       (str "\\huge{"
-                           (latex/poly->latex @output @var)
+                           (if (string? @output)
+                             @output (latex/poly->latex @output @var))
                            "}"))}}])])
 
 (defn render []

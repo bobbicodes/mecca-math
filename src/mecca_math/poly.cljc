@@ -192,9 +192,9 @@
                       (:term-list (dense-to-sparse b)))]
     {:variable (when (= (:variable a) (:variable b))
                  (:variable a))
-     :term-list (vec (if (:remainder (last div))
-                       (butlast div)
-                       div))
+     :term-list (:term-list (sparse-to-dense (poly "x" (vec (if (:remainder (last div))
+                                                              (butlast div)
+                                                              div)))))
      :remainder (when (:remainder (last div))
                   (:remainder (last div)))}))
 
@@ -203,6 +203,8 @@
   (last (div-terms (:term-list (dense-to-sparse (poly "x" [5 0 0 0 9])))
                    (:term-list (dense-to-sparse (poly "x" [1 0])))))
 
+  (sparse-to-dense (poly "x" [[3 5]]))
+  
   (divide-poly (poly "x" [5 0 0 0 9]) (poly "x" [1 0])))
 
 (defn mult-poly [poly1 poly2]

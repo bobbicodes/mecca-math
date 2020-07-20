@@ -15,10 +15,6 @@
 (defn latex->html [latex]
   (.renderToString katex latex (clj->js {:throwOnError false})))
 
-(comment
-  (latex/poly->latex [2 7 -6] "x")
-  )
-
 (defn button [label onclick]
   [:button
    {:on-click onclick}
@@ -35,14 +31,6 @@
 
 (defn div [poly1 poly2]
   (reset! output (latex/div (poly/divide-poly (poly/poly @var poly1) (poly/poly @var poly2)))))
-
-(latex/div (poly/divide-poly (poly/poly @var [5 0 0 0 9])
-                             (poly/poly @var [1 0])))
-
-@coeffs
-@coeffs2
-
-@output
 
 (defn app []
   [:div#app

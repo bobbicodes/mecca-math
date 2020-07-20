@@ -181,6 +181,49 @@
 
   (div-terms [[4 5] [0 9]] [[1 1]]))
 
+; Cool so dividing polynomials by x with remainders works.
+; Next is Divide quadratics by linear expressions (no remainders).
+; The answer is a polynomial.
+; (x^2-16) / (x+4) 
+
+;           x-4
+;    ----------
+; x+4|x^2+0x−16
+;  - (x^2+4x)
+;     --------
+;        −4x−16
+;     - (−4x−16)
+;       -------
+;            0
+
+; However, we are not equipped to divide by more than a single term.
+; 
+; Here is the transcript for a similar problem,
+; (x^2 + 7x +10) / x + 2 = x + 5
+
+; First look at the highest degree terms.
+; So then, you have an x in the divisor and an x squared in the dividend.
+; x goes into x squared x times.
+; Now write that in the first degree column.
+; And then you take that x
+; and you multiply it times the entire expression, x + 2.
+; So x times two is 2x.
+; Put that in the first degree column.
+; X times x is x squared.
+; Then subtract x^2 and 2x
+; from the original x^2 and 7x
+; And then we will be left with 7x minus 2x is 5x.
+; And then x squared minus x squared is just a zero.
+; And then we can bring down this plus 10.
+; And once again, we look at the highest degree term.
+; X goes into 5x five times.
+; That's a zero degree.
+; It's a constant, so I'll write it in the constant column.
+; Five times two is 10.
+; Five times x is five.
+; And then I'll subtract these from what we have up here.
+; And notice, we have no remainder.
+
 (defn mul-poly [a b]
   {:variable (when (= (:variable a) (:variable b))
                    (:variable a))
@@ -214,8 +257,6 @@
 
 (defn div-poly [poly1 poly2]
   (:term-list (sparse-to-dense (divide-poly (dense-to-sparse (poly 'x poly1)) (dense-to-sparse (poly 'x poly2))))))
-
-
 
 (comment
 

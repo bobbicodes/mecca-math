@@ -156,7 +156,7 @@
                  (first rest-of-result))
            (fnext rest-of-result)])))))
 
-#_(defn div-terms [l1 l2]
+(defn div-terms [l1 l2]
   (mapv #(div-term % (first l2)) l1))
 
 (comment
@@ -271,8 +271,8 @@
 ; 
 ; [[1 1] [0 5]]
 ; 
-; So that's what our loop can do. We go through the term-list of the dividend:
-
+; Eventually we want a recursive solution,
+; but for now this works:
 
 (defn div-quad-by-linear [dividend divisor]
   (let [q1 (div-term (highest-degree-term dividend) (highest-degree-term divisor))
@@ -281,11 +281,14 @@
         q2 (div-term (highest-degree-term s1) (highest-degree-term divisor))]
     [q1 q2]))
 
-; (x^2-16) / (x+4) 
+; (x^2-16) / (x+4) = x-4
 
 (comment
   (div-quad-by-linear [[2 1] [1 7] [0 10]] [[1 1] [0 2]])
   (div-quad-by-linear [[2 1] [0 -16]] [[1 1] [0 4]])
+  (div-quad-by-linear [[2 1] [1 -3] [0 -10]] [[1 1] [0 -5]])
+  (div-quad-by-linear [[2 1] [1 6] [0 9]] [[1 1] [0 3]])
+  (div-quad-by-linear [[2 1] [0 -9]] [[1 1] [0 -3]])
   )
 
 (defn mul-poly [a b]

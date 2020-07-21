@@ -28,25 +28,28 @@
   (map
    (fn [t]
      [(first t)
-     (- 0 (last t))]))
-   termlist)
+      (- 0 (last t))])
+   termlist))
 
 (defn add-terms [l1 l2]
-  (cond
-    (and (empty? l1) (empty? l2)) '()
-    (empty? l1) l2
-    (empty? l2) l1
-    :else
-    (let [t1 (first l1)
-          t2 (first l2)]
-      (cond
-        (> (first t1) (first t2)) (cons t1 (add-terms (rest l1) l2))
-        (< (first t1) (first t2)) (cons t2 (add-terms l1 (rest l2)))
-        :else
-        (cons [(first t1)
-                      (+ (last t1) (last t2))]
-                     (add-terms (rest l1)
-                                (rest l2)))))))
+  (vec (cond
+         (and (empty? l1) (empty? l2)) '()
+         (empty? l1) l2
+         (empty? l2) l1
+         :else
+         (let [t1 (first l1)
+               t2 (first l2)]
+           (cond
+             (> (first t1) (first t2)) (cons t1 (add-terms (rest l1) l2))
+             (< (first t1) (first t2)) (cons t2 (add-terms l1 (rest l2)))
+             :else
+             (cons [(first t1)
+                    (+ (last t1) (last t2))]
+                   (add-terms (rest l1)
+                              (rest l2))))))))
+
+(defn sub-terms [l1 l2]
+  (add-terms l1 (negate-terms l2)))
 
 (defn mul-term-by-all-terms [t1 l]
   (if (empty? l)
@@ -85,27 +88,6 @@
 
 (defn sub-poly [poly1 poly2]
   (map #(- % %2) poly1 poly2))
-
-; https://www.khanacademy.org/math/algebra2/x2ec2f6f830c9fb89:poly-div/x2ec2f6f830c9fb89:poly-div-by-x/e/poly-by-x-no-remainders
-; Divide the polynomials.
-; Your answer should be a polynomial.
-
-; (x^5 - 3x^2 + 2x) / x
-; 
-; Usually, there are many different ways to divide polynomials. Here, we will use the method of factoring and canceling common factors.
-; Try to factor the numerator, and see if you end up with a common factor to cancel with the denominator.
-; 
-; x(x^4 - 3x + 2)
-
-
-
-
-
-; Another way to perform this division is by splitting the quotient into multiple quotients:
-
-; (x^5 / x) - (3x^2 / x) + (2x / x)
-
-; = x^4 - 3x + 2
 
 (dense-to-sparse (poly 'x [5 0 0 0 9]))
 (dense-to-sparse (poly 'x [1 0]))
@@ -174,12 +156,12 @@
                  (first rest-of-result))
            (fnext rest-of-result)])))))
 
-(defn div-terms [l1 l2]
+#_(defn div-terms [l1 l2]
   (mapv #(div-term % (first l2)) l1))
 
 (comment
 
-  (div-terms [[4 5] [0 9]] [[1 1]]))
+  #_(div-terms [[4 5] [0 9]] [[1 1]]))
 
 ; Cool so dividing polynomials by x with remainders works.
 ; Next is Divide quadratics by linear expressions (no remainders).
@@ -196,17 +178,63 @@
 ;       -------
 ;            0
 
-; However, we are not equipped to divide by more than a single term.
+; However, we are not yet equipped to divide by more than a single term.
+; What we need is the recursive evaluator.
+; 
+; Here are the steps:
+; 
+; Dividend:
+; x^2-16
+(dense-to-sparse (poly "x" [1 0 -16]))
+; {:variable "x", :term-list [[2 1] [0 -16]]}
+; 
+; Divisor:
+; x+4
+(dense-to-sparse (poly "x" [1 4]))
+; {:variable "x", :term-list [[1 1] [0 4]]}
+; 
+; 
 ; 
 ; Here is the transcript for a similar problem,
-; (x^2 + 7x +10) / x + 2 = x + 5
+; which is particularly important because it is the first time
+; we have needed to do full long-division
+; including the multiplication and subtraction.
+; (x^2 + 7x + 10) / x + 2 = x + 5
+
+(dense-to-sparse (poly "x" [1 7 10]))
+; {:variable "x", :term-list [[2 1] [1 7] [0 10]]}
+
+(dense-to-sparse (poly "x" [1 2]))
+; {:variable "x", :term-list [[1 1] [0 2]]}
+
+(def dividend [[2 1] [1 7] [0 10]])
+(def divisor [[1 1] [0 2]])
 
 ; First look at the highest degree terms.
+
+(defn highest-degree-term
+  "Returns the term in the list with the highest order with a non-zero coefficient."
+  [terms]
+  (last (sort-by first (filter #(not= 0 (last %)) terms))))
+
+
+(highest-degree-term dividend)
+; [2 1]
+
+(highest-degree-term divisor)
+; [1 1]
+; 
 ; So then, you have an x in the divisor and an x squared in the dividend.
 ; x goes into x squared x times.
+(div-term [2 1] [1 1]) 
+; [1 1] 
+; 
 ; Now write that in the first degree column.
 ; And then you take that x
 ; and you multiply it times the entire expression, x + 2.
+(mul-terms [[1 1]] [[1 1] [0 2]])
+; [[2 1] [1 2]]
+; 
 ; So x times two is 2x.
 ; Put that in the first degree column.
 ; X times x is x squared.
@@ -214,15 +242,51 @@
 ; from the original x^2 and 7x
 ; And then we will be left with 7x minus 2x is 5x.
 ; And then x squared minus x squared is just a zero.
+; 
+(sub-terms [[2 1] [1 7]] [[2 1] [1 2]])
+; [[2 0] [1 5]]
+; 
 ; And then we can bring down this plus 10.
+
+(drop 2 dividend)
+; ([0 10])
 ; And once again, we look at the highest degree term.
+(highest-degree-term (sub-terms [[2 1] [1 7]] [[2 1] [1 2]]))
+; [1 5]
+(div-term [1 5] [1 1])
+; [0 5]
 ; X goes into 5x five times.
 ; That's a zero degree.
 ; It's a constant, so I'll write it in the constant column.
 ; Five times two is 10.
 ; Five times x is five.
+(mul-terms [[0 5]] [[1 1] [0 2]])
+; [[1 5] [0 10]]
 ; And then I'll subtract these from what we have up here.
+(sub-terms [[1 5] [0 10]] [[1 5] [0 10]])
 ; And notice, we have no remainder.
+;
+; So as we see, our answer is produced by 
+; collecting together the results of our calls to div-term:
+; 
+; [[1 1] [0 5]]
+; 
+; So that's what our loop can do. We go through the term-list of the dividend:
+
+
+(defn div-quad-by-linear [dividend divisor]
+  (let [q1 (div-term (highest-degree-term dividend) (highest-degree-term divisor))
+        m1 (mul-terms [q1] divisor)
+        s1 (sub-terms (take 2 dividend) m1)
+        q2 (div-term (highest-degree-term s1) (highest-degree-term divisor))]
+    [q1 q2]))
+
+; (x^2-16) / (x+4) 
+
+(comment
+  (div-quad-by-linear [[2 1] [1 7] [0 10]] [[1 1] [0 2]])
+  (div-quad-by-linear [[2 1] [0 -16]] [[1 1] [0 4]])
+  )
 
 (defn mul-poly [a b]
   {:variable (when (= (:variable a) (:variable b))
@@ -270,22 +334,3 @@
 
   (:term-list (sparse-to-dense (divide-poly (dense-to-sparse (poly 'x [1 0 0 -3 2 0])) (dense-to-sparse (poly 'x [1 0])))))
   (sub-poly [-9 0 0 0 8] [-9 2 5 0 0]))
-
-(defn prime-factors
-  ([n] (prime-factors 2 n))
-  ([f n]
-   (when (> n 1)
-     (if (zero? (mod n f))
-       (cons f (prime-factors f (/ n f)))
-       (recur (inc f) n)))))
-
-(defn perfect-squares [s]
-  (loop [items (sort s) pairs []]
-    (if (empty? items) pairs
-        (if (= (first items) (second items))
-          (recur (drop 2 items) (conj pairs (first items)))
-          (recur (rest items) pairs)))))
-
-(defn simplify-sqrt [sqrt]
-  (let [sq (reduce * (perfect-squares (prime-factors sqrt)))]
-    [sq (/ sqrt (* sq sq))]))

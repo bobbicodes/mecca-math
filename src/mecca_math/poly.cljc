@@ -278,8 +278,11 @@
   (let [q1 (div-term (highest-degree-term dividend) (highest-degree-term divisor))
         m1 (mul-terms [q1] divisor)
         s1 (sub-terms (take 2 dividend) m1)
-        q2 (div-term (highest-degree-term s1) (highest-degree-term divisor))]
-    [q1 q2]))
+        q2 (div-term (highest-degree-term s1) (highest-degree-term divisor))
+        m2 (mul-terms [q2] divisor)
+        s2 (sub-terms (into s1 (drop 2 dividend)) m2)]
+  {:quotient [q1 q2]
+   :remainder (last (last s2))}))
 
 ; (x^2-16) / (x+4) = x-4
 
@@ -288,8 +291,47 @@
   (div-quad-by-linear [[2 1] [0 -16]] [[1 1] [0 4]])
   (div-quad-by-linear [[2 1] [1 -3] [0 -10]] [[1 1] [0 -5]])
   (div-quad-by-linear [[2 1] [1 6] [0 9]] [[1 1] [0 3]])
+  (div-quad-by-linear [[2 1] [1 1] [0 -6]] [[1 1] [0 3]])
   (div-quad-by-linear [[2 1] [0 -9]] [[1 1] [0 -3]])
   )
+
+
+; Now with remainders - 
+; (x^2 + 5x + 8) / x+2
+; So we're trying to take x+2 and divide it into
+; x^2 + 5x + 8
+; Look at the highest degree terms, the x and the x squared.
+; x goes into x squared x times,
+; put it in the first degree column.
+; x times two is two x, x times x is x squared,
+; subtract these from x squared plus five x
+; and we get five x minus two x is three x.
+; x squared minus x squared, that's just zero.
+; Bring down that eight.
+; Look at the highest-degree term.
+; And we get x goes into three x three times.
+; Put that in the constant column,
+; or the zeroth degree column, so plus three.
+; Three times two is six, three times x is three x.
+; Subtract ds, and we are left with,
+; let me scroll down a little bit,
+; you're left with, those cancel out,
+; and you're left with eight minus six,
+; which is, indeed, equal to two.
+; And we could say, hey, we don't really know how to divide
+; x plus two into two for an arbitrary x,
+; so we will say, hey, this is going to be equal to
+; x plus three with a remainder of two.
+; Now once again, if you wanted to rewrite that original
+; expression, and you wanted it to be completely the same,
+; including the domain, you would have to constrain,
+; you would have to constrain the domain,
+; just like that.
+
+(div-quad-by-linear [[2 1] [1 -3] [0 9]] [[1 1] [0 -2]])
+(div-quad-by-linear [[2 1] [0 -5]] [[1 1] [0 -2]])
+(div-quad-by-linear [[2 1] [1 -9] [0 14]] [[1 1] [0 -5]])
+(div-quad-by-linear [[2 1] [0 2]] [[1 1] [0 -1]])
 
 (defn mul-poly [a b]
   {:variable (when (= (:variable a) (:variable b))

@@ -296,38 +296,6 @@
   )
 
 
-; Now with remainders - 
-; (x^2 + 5x + 8) / x+2
-; So we're trying to take x+2 and divide it into
-; x^2 + 5x + 8
-; Look at the highest degree terms, the x and the x squared.
-; x goes into x squared x times,
-; put it in the first degree column.
-; x times two is two x, x times x is x squared,
-; subtract these from x squared plus five x
-; and we get five x minus two x is three x.
-; x squared minus x squared, that's just zero.
-; Bring down that eight.
-; Look at the highest-degree term.
-; And we get x goes into three x three times.
-; Put that in the constant column,
-; or the zeroth degree column, so plus three.
-; Three times two is six, three times x is three x.
-; Subtract ds, and we are left with,
-; let me scroll down a little bit,
-; you're left with, those cancel out,
-; and you're left with eight minus six,
-; which is, indeed, equal to two.
-; And we could say, hey, we don't really know how to divide
-; x plus two into two for an arbitrary x,
-; so we will say, hey, this is going to be equal to
-; x plus three with a remainder of two.
-; Now once again, if you wanted to rewrite that original
-; expression, and you wanted it to be completely the same,
-; including the domain, you would have to constrain,
-; you would have to constrain the domain,
-; just like that.
-
 (div-quad-by-linear [[2 1] [1 -3] [0 9]] [[1 1] [0 -2]])
 (div-quad-by-linear [[2 1] [0 -5]] [[1 1] [0 -2]])
 (div-quad-by-linear [[2 1] [1 -9] [0 14]] [[1 1] [0 -5]])
@@ -341,7 +309,7 @@
         s1 (sub-terms (take 2 dividend) m1)
         q2 (div-term (highest-degree-term s1) (highest-degree-term divisor))
         m2 (mul-terms [q2] divisor)
-        s2 (sub-terms (into s1 (drop 2 dividend)) m2)
+        s2 (sub-terms (into s1 (take 1 (drop 2 dividend))) m2)
         q3 (div-term (highest-degree-term s2) (highest-degree-term divisor))
         m3 (mul-terms [q3] divisor)
         s3 (sub-terms (into s2 (drop 3 dividend)) m3)]
@@ -349,7 +317,6 @@
      :remainder (last (last s3))}))
 
 (div-poly-by-linear [[3 3] [1 1] [0 -11]] [[1 1] [0 1]])
-(div-poly-by-linear [[3 3] [2 4] [1 -3] [0 7]] [[1 1] [0 2]])
 
 (let [dividend [[3 3] [2 4] [1 -3] [0 7]]
       divisor [[1 1] [0 2]]
@@ -365,73 +332,6 @@
   {:quotient [q1 q2 q3]
    :remainder (last (last s3))})
 
-
-; All right, now let's work through it together.
-; And what we're trying to do is divide x plus two,
-; into three x to the third power
-; plus four x squared minus three x plus seven.
-; And so, like always,
-; we focus on the highest degree terms first.
-; x goes into three x to the third power how many times?
-; Three x squared times.
-; We'd want to put that in the second degree column.
-; Three x squared.
-; Three x squared times two is six x squared.
-; Three x squared times x is three x to the third power.
-; There's something very meditative
-; about algebraic long division.
-; Anyway, we'd want to subtract what we just wrote
-; from what we have up here.
-; So let's subtract.
-; And these characters cancel out.
-; And then four x squared minus six x squared
-; is negative two x squared.
-; Bring down that negative three x.
-; And now we would wanna say,
-; hey, how many times does x go into negative two x squared?
-; Well, it would go negative two x times.
-; Put that in our first degree column.
-; Negative two x times two is negative four x.
-; Negative two x times x is negative two x squared.
-; Now we wanna subtract what we have here in orange
-; from what we have up here in teal.
-; So we either put a negative around the whole thing
-; or we distribute that negative and that becomes a positive,
-; that becomes a positive.
-; And so this is equal to, the x squared terms cancel out.
-; Negative three x plus four x
-; is just going to be a straight up x.
-; Bring down that seven, x plus seven.
-; How many times does x go into x?
-; Well, one time.
-; Actually, let me do a, use a new color here.
-; So, how many times does x go into x?
-; It goes one time.
-; Put that in the constant column.
-; One times two is two.
-; One times x is x.
-; We wanna subtract these characters.
-; And we're left with seven minus two is five.
-; And so, we can rewrite this whole thing as,
-; we deserve I guess a little bit of a drum roll.
-; Three x squared minus two x plus one,
-; plus the remainder,
-; five, over x plus two.
-; One way to think about it is,
-; hey, I have this remainder,
-; I'd have to keep dividing it by x plus two
-; if I really wanted to figure out exactly what this is.
-; Now if I wanted these expressions to be completely identical
-; I would put a condition on the domain
-; that x cannot be equal to negative two
-; because if x was equal to negative two,
-; we'd be dividing by zero here.
-; But for the purposes of this exercise,
-; you just have to input this part right over here,
-; you'd have to type it in,
-; which I guess isn't the easiest thing to do in the world.
-; But it's worth doing.
-; All right, see you in the next video.
 
 (let [dividend [[3 3] [2 10] [1 7]]
       divisor [[1 1] [0 1]]
@@ -450,95 +350,20 @@
 
 ; \begin{array}{r} 3x^2-\phantom{1}5x+\phantom{1}6 \\ x+2|\overline{3x^3+\phantom{6}x^2-\phantom{1}4x+12} \\ \mathllap{-(}\underline{3x^3+6x^2\phantom{-14x+12}\rlap )} \\ {}-5x^2-\phantom{1}4x+12 \\ \mathllap{-(}\underline{{}-5x^2-10x\phantom{+12}\rlap )} \\ 6x+12 \\ \mathllap{-(}\underline{6x+12\rlap )} \\ 0 \end{array}
 
-(let [dividend [[3 3] [2 1] [1 -4] [0 12]]
-      divisor [[1 1] [0 2]]
-      q1 (div-term (highest-degree-term dividend) (highest-degree-term divisor))
-      m1 (mul-terms [q1] divisor)
-      s1 (sub-terms (take 2 dividend) m1)
-      q2 (div-term (highest-degree-term s1) (highest-degree-term divisor))
-      m2 (mul-terms [q2] divisor)
-      s2 (sub-terms (into s1 (take 1 (drop 2 dividend))) m2)
-      q3 (div-term (highest-degree-term s2) (highest-degree-term divisor))
-      m3 (mul-terms [q3] divisor)
-      s3 (sub-terms (into s2 (drop 3 dividend)) m3)]
-  {:quotient [q1 q2 q3]
-   :remainder (last (last s3))})
+(div-poly-by-linear [[3 3] [2 1] [1 -4] [0 12]] [[1 1] [0 2]])
 
 ; \dfrac{x^3+5x^2-9x+30}{x+7}=
 
-(let [dividend [[3 1] [2 5] [1 -9] [0 30]]
-      divisor [[1 1] [0 7]]
-      q1 (div-term (highest-degree-term dividend) (highest-degree-term divisor))
-      m1 (mul-terms [q1] divisor)
-      s1 (sub-terms (take 2 dividend) m1)
-      q2 (div-term (highest-degree-term s1) (highest-degree-term divisor))
-      m2 (mul-terms [q2] divisor)
-      s2 (sub-terms (into s1 (take 1 (drop 2 dividend))) m2)
-      q3 (div-term (highest-degree-term s2) (highest-degree-term divisor))
-      m3 (mul-terms [q3] divisor)
-      s3 (sub-terms (into s2 (drop 3 dividend)) m3)]
-  {:quotient [q1 q2 q3]
-   :remainder (last (last s3))})
+(div-poly-by-linear [[3 1] [2 5] [1 -9] [0 30]] [[1 1] [0 7]])
 
 ; \begin{array}{r} x^2-\phantom{1}2x+\phantom{1}5 \\ x+7|\overline{x^3+5x^2-\phantom{1}9x+30} \\ \mathllap{-(}\underline{x^3+7x^2\phantom{-19x+30}\rlap )} \\ {}-2x^2-\phantom{1}9x+30 \\ \mathllap{-(}\underline{{}-2x^2-14x\phantom{+30}\rlap )} \\ 5x+30 \\ \mathllap{-(}\underline{5x+35\rlap )} \\ -5 \end{array}
 
 ; \dfrac{2x^3-x^2-12}{x+3}=
 
-(let [dividend [[3 2] [2 -1] [0 -12]]
-      divisor [[1 1] [0 3]]
-      q1 (div-term (highest-degree-term dividend) (highest-degree-term divisor))
-      m1 (mul-terms [q1] divisor)
-      s1 (sub-terms (take 2 dividend) m1)
-      q2 (div-term (highest-degree-term s1) (highest-degree-term divisor))
-      m2 (mul-terms [q2] divisor)
-      s2 (sub-terms (into s1 (take 1 (drop 2 dividend))) m2)
-      q3 (div-term (highest-degree-term s2) (highest-degree-term divisor))
-      m3 (mul-terms [q3] divisor)
-      s3 (sub-terms (into s2 (drop 3 dividend)) m3)]
-  {:quotient [q1 q2 q3]
-   :remainder (last (last s3))})
-
-(let [dividend [[3 1] [1 -4] [0 -15]]
-      divisor [[1 1] [0 -3]]
-      q1 (div-term (highest-degree-term dividend) (highest-degree-term divisor))
-      m1 (mul-terms [q1] divisor)
-      s1 (sub-terms (take 2 dividend) m1)
-      q2 (div-term (highest-degree-term s1) (highest-degree-term divisor))
-      m2 (mul-terms [q2] divisor)
-      s2 (sub-terms (into s1 (take 1 (drop 2 dividend))) m2)
-      q3 (div-term (highest-degree-term s2) (highest-degree-term divisor))
-      m3 (mul-terms [q3] divisor)
-      s3 (sub-terms (into s2 (drop 3 dividend)) m3)]
-  {:quotient [q1 q2 q3]
-   :remainder (last (last s3))})
-
-(let [dividend [[3 4] [2 -14] [1 -7] [0 -4]]
-      divisor [[1 1] [0 -4]]
-      q1 (div-term (highest-degree-term dividend) (highest-degree-term divisor))
-      m1 (mul-terms [q1] divisor)
-      s1 (sub-terms (take 2 dividend) m1)
-      q2 (div-term (highest-degree-term s1) (highest-degree-term divisor))
-      m2 (mul-terms [q2] divisor)
-      s2 (sub-terms (into s1 (take 1 (drop 2 dividend))) m2)
-      q3 (div-term (highest-degree-term s2) (highest-degree-term divisor))
-      m3 (mul-terms [q3] divisor)
-      s3 (sub-terms (into s2 (drop 3 dividend)) m3)]
-  {:quotient [q1 q2 q3]
-   :remainder (last (last s3))})
-
-(let [dividend [[3 5] [2 -22] [1 -17] [0 11]]
-      divisor [[1 1] [0 -5]]
-      q1 (div-term (highest-degree-term dividend) (highest-degree-term divisor))
-      m1 (mul-terms [q1] divisor)
-      s1 (sub-terms (take 2 dividend) m1)
-      q2 (div-term (highest-degree-term s1) (highest-degree-term divisor))
-      m2 (mul-terms [q2] divisor)
-      s2 (sub-terms (into s1 (take 1 (drop 2 dividend))) m2)
-      q3 (div-term (highest-degree-term s2) (highest-degree-term divisor))
-      m3 (mul-terms [q3] divisor)
-      s3 (sub-terms (into s2 (drop 3 dividend)) m3)]
-  {:quotient [q1 q2 q3]
-   :remainder (last (last s3))})
+(div-poly-by-linear [[3 2] [2 -1] [0 -12]] [[1 1] [0 3]])
+(div-poly-by-linear [[3 1] [1 -4] [0 -15]] [[1 1] [0 -3]])
+(div-poly-by-linear [[3 4] [2 -14] [1 -7] [0 -4]] [[1 1] [0 -4]])
+(div-poly-by-linear [[3 5] [2 -22] [1 -17] [0 11]] [[1 1] [0 -5]])
 
 (defn mul-poly [a b]
   {:variable (when (= (:variable a) (:variable b))

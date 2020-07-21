@@ -67,7 +67,7 @@
      :style {:resize "none"
              :height "20px"
              :width "34%"}}]
-   #_[:div#latex2 [:textarea
+   [:div#latex2 [:textarea
                 {:on-change #(reset! latex2 (-> % .-target .-value))
                  :value @latex2
                  :style {:resize "none"
